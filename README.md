@@ -45,9 +45,18 @@ Copy `web/.env.example` → `web/.env.local` to override locally.
 ## Pendo (installed by Novus)
 
 This is a demo fixture: load it into **Novus**, which scans the repo and opens a PR
-adding the Pendo agent + tagging. The app already calls `window.pendo.track("demo-<action>")`
-on every button via the seam in `web/src/App.tsx` — no code change needed once the
-agent is present (it's a no-op until then).
+adding the Pendo agent + tagging. The app already calls `window.pendo.track("demo-<action>", props)`
+via the seam in `web/src/App.tsx` — no code change needed once the agent is present
+(it's a no-op until then):
+
+| Event | Fires when | Properties |
+| --- | --- | --- |
+| `demo-load` | the initial `GET /api/state` succeeds (once per page load) | `counter`, `last_action` |
+| `demo-increment` | `POST /api/increment` succeeds | `counter`, `previous_counter` |
+| `demo-decrement` | `POST /api/decrement` succeeds | `counter`, `previous_counter` |
+| `demo-reset` | `POST /api/reset` succeeds | `previous_counter` (the value cleared) |
+| `demo-refresh` | Refresh re-fetches `GET /api/state` | `counter`, `previous_counter`, `counter_changed`, `last_action` |
+| `demo-action-failed` | any of the API calls above fails | `action`, `error_type`, `error_message`, `http_status` (non-2xx only) |
 
 ## Tests
 
