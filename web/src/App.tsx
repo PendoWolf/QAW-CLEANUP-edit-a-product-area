@@ -20,7 +20,14 @@ export default function App() {
       setState(await fn());
       trackEvent(name);
     } catch (e) {
-      setError((e as Error).message);
+      const message = (e as Error).message;
+      setError(message);
+      // Track Event: an API call failed and its error message is shown.
+      window.pendo?.track?.("API error shown", {
+        action: name,
+        error_type: (e as Error).name || "Error",
+        error_message: message.substring(0, 100),
+      });
     }
   };
 
